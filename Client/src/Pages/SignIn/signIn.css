@@ -1,0 +1,145 @@
+.signin-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #2e3a59, #3f5368);
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.signin-box {
+  background-color: #fefefe;
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  transition: transform 0.2s ease-in-out;
+}
+
+.signin-box:hover {
+  transform: translateY(-5px);
+}
+
+.signin-title {
+  margin-bottom: 2rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #2e3a59;
+  font-family: 'Poppins', sans-serif;
+}
+
+.input-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+}
+
+.input-group input {
+  margin-right: 20rem;
+  width: 100%;
+  padding: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #f9f9f9;
+  font-family: 'Poppins', sans-serif;
+  transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+  border-color: #007bff;
+}
+
+.error-border input {
+  border-color: #e74c3c;
+}
+
+.error-message {
+  color: #e74c3c;
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.signin-btn {
+  padding: 0.85rem 2.5rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.signin-btn:hover {
+  background-color: #0056b3;
+}
+
+.signin-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.forgot-password {
+  color: #007bff;
+  font-size: 0.9rem;
+  font-family: 'Poppins', sans-serif;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.forgot-password:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.new-user {
+  margin-top: 2rem;
+  font-size: 0.95rem;
+  font-family: 'Poppins', sans-serif;
+  color: #2e3a59;
+}
+
+.new-user a {
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.new-user a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .signin-box {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .signin-container {
+    padding: 1rem;
+  }
+
+  .signin-box {
+    padding: 1.5rem;
+  }
+
+  .signin-btn {
+    padding: 0.75rem 2rem;
+  }
+}
