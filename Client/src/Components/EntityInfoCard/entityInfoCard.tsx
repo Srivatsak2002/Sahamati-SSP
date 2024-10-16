@@ -45,7 +45,6 @@ const InfoCard: React.FC<InfoCardProps> = ({
         setSecret(null);
       }
     } catch (error) {
-      console.error("Error reading entity secret:", error);
       toast.error("Error reading entity secret. Please try again.");
     }
   };
@@ -56,7 +55,6 @@ const InfoCard: React.FC<InfoCardProps> = ({
       setSecret(null);
       toast.success("Entity secret reset successfully.");
     } catch (error) {
-      console.error("Error resetting entity secret:", error);
       toast.error("Error resetting entity secret. Please try again.");
     }
     setOpenDialog(false); 

@@ -17,7 +17,6 @@ const SignIn: React.FC = () => {
       const response = await userTokenGenerate({ username: email, password });
       const token = response.data.accessToken;
       toast.success("Signed in successfully!");
-      console.log("token", token);
       navigate("/home", { state: { email, token } });
     } catch (error) {
       setError("Incorrect username or password");

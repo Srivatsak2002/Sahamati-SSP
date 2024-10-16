@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./forgotPassword.css";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { resetPassword } from "../../Services/api";
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -13,14 +14,12 @@ const ForgotPassword: React.FC = () => {
     setError("");
 
     try {
-      // Make an API call to request a password reset
-      // Example: await requestPasswordReset({ email });
+      await resetPassword(email);
       toast.success(
         "Password reset instructions have been sent to your email."
       );
       navigate("/signin");
     } catch (error) {
-      console.error("Error requesting password reset:", error);
       setError("Failed to request password reset. Please try again.");
       toast.error("Failed to request password reset.");
     }
