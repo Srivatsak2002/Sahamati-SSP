@@ -1,20 +1,39 @@
 .sidebar {
   width: 240px;
   height: 100vh;
-  background-color: #1f2833; 
+  background-color: #1f2833;
   display: flex;
   flex-direction: column;
   position: fixed;
   margin-top: 64px;
+  transition: width 0.3s ease; 
 }
 
-.sidebar-header {
-  padding: 20px;
-  text-align: center;
+.sidebar.closed {
+  width: 60px; 
 }
 
-.sidebar-logo {
-  width: 100px;
+.sidebar-header.open {
+  display: flex;                
+  justify-content: flex-end; 
+  margin-left: 15.5rem;   
+  padding: 10px;                
+}
+.sidebar-header.closed{
+  display: flex;                
+  justify-content: flex-end; 
+  margin-left: 4rem;   
+  padding: 10px;
+}
+
+.toggle-button {
+  background: #FF9343;;
+  border-radius: 50%;
+  align-items: center;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 24px; 
 }
 
 .sidebar-menu {
@@ -28,32 +47,37 @@
 
 .sidebar-menu li {
   padding: 15px 20px;
-  position: relative; 
+  position: relative;
 }
 
 .sidebar-menu a {
-  color: #c5c6c7; 
+  color: #c5c6c7;
   text-decoration: none;
   display: flex;
   align-items: center;
   font-size: 18px;
-  transition: background-color 0.3s ease, color 0.3s ease; 
-  padding: 15px 20px; 
+  transition: background-color 0.3s ease, color 0.3s ease;
+  padding: 15px 20px;
 }
 
 .sidebar-menu li a:hover {
   background-color: #3a3f47;
   color: #fff;
-  margin-left: -10px;  
-  margin-right: -10px; 
-  margin-top: -5px;   
-  margin-bottom: -5px;  
+  margin-left: -10px;
+  margin-right: -10px;
+  margin-top: -5px;
+  margin-bottom: -5px;
 }
 
 .sidebar-menu a.active {
   background-color: #3a3f47;
-  color: #fff; 
+  color: #fff;
 }
+
 .sidebar-icon {
-  margin-right: 10px; 
+  margin-right: 10px;
+}
+
+.sidebar.closed .sidebar-menu a {
+  opacity: 0; /* Hide text when closed */
 }

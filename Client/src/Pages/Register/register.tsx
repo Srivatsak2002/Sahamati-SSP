@@ -3,17 +3,16 @@ import "./register.css";
 import { useNavigate } from "react-router-dom";
 
 const Register: React.FC = () => {
+  const [username, setUsername] = useState<string>("");
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const navigate = useNavigate();
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     // Handle registration logic here
-    console.log({ firstName, lastName, email, password, confirmPassword });
+    console.log({ username, firstName, lastName, email });
   };
 
   return (
@@ -21,6 +20,27 @@ const Register: React.FC = () => {
       <div className="register-box">
         <h1 className="register-title">Register</h1>
         <form onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label htmlFor="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          <div className="input-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
           <div className="input-group">
             <label htmlFor="firstName">First name</label>
             <input
@@ -39,39 +59,6 @@ const Register: React.FC = () => {
               id="lastName"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="input-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="input-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="input-group">
-            <label htmlFor="confirmPassword">Confirm password</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
           </div>

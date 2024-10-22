@@ -3,18 +3,22 @@ import "./forgotPassword.css";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { resetPassword } from "../../Services/api";
+import CircularIndeterminate from "../../Components/CircularProgress/circularProgress";
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
-      await resetPassword(email);
+      const response =await resetPassword(email);
+      console.log("reponsens",response)
       toast.success(
         "Password reset instructions have been sent to your email."
       );
@@ -22,6 +26,8 @@ const ForgotPassword: React.FC = () => {
     } catch (error) {
       setError("Failed to request password reset. Please try again.");
       toast.error("Failed to request password reset.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -34,7 +40,7 @@ const ForgotPassword: React.FC = () => {
           reset your password.
         </p>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="forgot-password-form">
           <div className="input-group">
             <label htmlFor="email">Email</label>
             <input
@@ -48,20 +54,25 @@ const ForgotPassword: React.FC = () => {
 
           {error && <p className="error-message">{error}</p>}
           <div>
-          <a
+            <a
               href="#"
               className="back-to-signin-link"
               onClick={() => navigate("/signin")}
             >
               Back to Sign In
             </a>
-            <button type="submit" className="reset-password-btn">
+
+            <button type="submit" className="reset-password-btn" disabled={loading}>
               Send Reset Instructions
             </button>
-           
           </div>
-          
         </form>
+
+        {loading && (
+          <div className="loading-overlay">
+            <CircularIndeterminate />
+          </div>
+        )}
       </div>
     </div>
   );

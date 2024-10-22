@@ -8,7 +8,6 @@ import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
-import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import LogoutIcon from "@mui/icons-material/Logout"; 
 import { useNavigate } from "react-router-dom";
@@ -135,7 +134,7 @@ function ResponsiveAppBar({ name }: ResponsiveAppBarProps) {
                 onClick={handleOpenUserMenu}
                 sx={{ p: 0, marginLeft: 2 }}
               >
-                <Avatar sx={{ bgcolor: "#303f9f" }}>
+                <Avatar sx={{ bgcolor: "#000080" }}>
                   {getInitials(name)}
                 </Avatar>
               </IconButton>

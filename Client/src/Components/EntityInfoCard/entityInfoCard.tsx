@@ -109,7 +109,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
             >
               {secret
                 ? `Secret: ${secret}`
-                : "Secret:XXXXXXXXXXXXXXXXXXXXXXXXXXXXX"}
+                : "Secret: XXXXXXXXXXXXXXXXXXXXXXXXXXXXX"}
             </Typography>
             <Tooltip
               title={

@@ -12,7 +12,7 @@ const Home = () => {
   const location = useLocation();
   const { email, token } = location.state as { email: string; token: string };
   const decodedToken = JSON.parse(atob(token.split(".")[1]));
-  const entityMeta = decodedToken.entity_meta;
+  const entityMeta = decodedToken.entity_meta || {};
   const username = decodedToken.name;
 
   const entityDetailsArray = Object.keys(entityMeta).map((key) => ({
@@ -48,20 +48,24 @@ const Home = () => {
               marginTop: "20px",
             }}
           >
-            {entityDetailsArray.map((entity, index) => (
-              <InfoCard
-                key={index}
-                icon={
-                  <AssuredWorkloadIcon
-                    sx={{ color: "green" }}
-                    fontSize="large"
-                  />
-                }
-                title={`Entity ${index + 1}`}
-                entityId={entity.entityId}
-                token={token}
-              />
-            ))}
+            {entityDetailsArray.length > 0 ? (
+              entityDetailsArray.map((entity, index) => (
+                <InfoCard
+                  key={index}
+                  icon={
+                    <AssuredWorkloadIcon
+                      sx={{ color: "green" }}
+                      fontSize="large"
+                    />
+                  }
+                  title={`Entity ${index + 1}`}
+                  entityId={entity.entityId}
+                  token={token}
+                />
+              ))
+            ) : (
+              <Typography variant="h6">No entities available for the user {email}</Typography>
+            )}
           </Box>
         </div>
       </div>
