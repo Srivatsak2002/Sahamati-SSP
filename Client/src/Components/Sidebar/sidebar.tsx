@@ -9,13 +9,18 @@ import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrow
 import { useLocation } from "react-router-dom";
 import "./sidebar.css";
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  onToggle: (isOpen: boolean) => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onToggle }) => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(true); 
   const dashboardLink = process.env.REACT_APP_DASHBOARD_URL;
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen); 
+    onToggle(!isOpen); 
   };
 
   return (

@@ -17,6 +17,7 @@ import {
 import { SvgIconComponent } from "@mui/icons-material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { readEntitySecret, resetEntitySecret } from "../../Services/api";
 import { toast } from "react-toastify";
 
@@ -27,14 +28,14 @@ interface InfoCardProps {
   token: string;
 }
 
-const InfoCard: React.FC<InfoCardProps> = ({
+const EntityInfoCard: React.FC<InfoCardProps> = ({
   icon,
   title,
   entityId,
   token,
 }) => {
   const [secret, setSecret] = useState<string | null>(null);
-  const [openDialog, setOpenDialog] = useState(false); 
+  const [openDialog, setOpenDialog] = useState(false);
 
   const handleReadSecret = async () => {
     try {
@@ -57,7 +58,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
     } catch (error) {
       toast.error("Error resetting entity secret. Please try again.");
     }
-    setOpenDialog(false); 
+    setOpenDialog(false);
   };
 
   const handleOpenDialog = () => {
@@ -65,7 +66,16 @@ const InfoCard: React.FC<InfoCardProps> = ({
   };
 
   const handleCloseDialog = () => {
-    setOpenDialog(false); 
+    setOpenDialog(false);
+  };
+
+  const handleCopySecret = () => {
+    if (secret) {
+      navigator.clipboard.writeText(secret);
+      toast.success("Secret copied to clipboard!");
+    } else {
+      toast.info("No secret to copy.");
+    }
   };
 
   return (
@@ -123,6 +133,13 @@ const InfoCard: React.FC<InfoCardProps> = ({
                 <VisibilityIcon />
               </IconButton>
             </Tooltip>
+            {secret && (
+              <Tooltip title="Copy secret to clipboard" arrow>
+                <IconButton onClick={handleCopySecret}>
+                  <ContentCopyIcon />
+                </IconButton>
+              </Tooltip>
+            )}
             <Tooltip title="Reset the entity secret" arrow>
               <IconButton onClick={handleOpenDialog}>
                 <RefreshIcon />
@@ -144,7 +161,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="confirm-dialog-description">
-            Are you sure you want to reset the entity secret for {entityId}
+            Are you sure you want to reset the entity secret for {entityId}?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -160,4 +177,4 @@ const InfoCard: React.FC<InfoCardProps> = ({
   );
 };
 
-export default InfoCard;
+export default EntityInfoCard;

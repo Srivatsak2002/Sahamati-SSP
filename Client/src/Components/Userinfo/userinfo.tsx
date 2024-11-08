@@ -5,17 +5,19 @@ interface UserInfoProps {
   title: string;
   name: string;
   email: string;
+  isSidebarOpen: boolean;
 }
 
-const UserInfo: React.FC<UserInfoProps> = ({ title, name, email }) => {
+const UserInfo: React.FC<UserInfoProps> = ({ title, name, email, isSidebarOpen }) => {
   return (
     <Card
       sx={{
         margin: "20px 0",
         padding: "15px",
         boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-        maxWidth: "1090px",
-        ml: "280px",
+        maxWidth: isSidebarOpen ? "1090px":"1270px",
+        ml: isSidebarOpen ? "280px" : "90px", 
+        transition: "margin-left 0.3s ease", 
       }}
     >
       <CardContent>
