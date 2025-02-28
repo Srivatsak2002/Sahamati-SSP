@@ -3,6 +3,7 @@ import "./signIn.css";
 import { useNavigate } from "react-router-dom";
 import { userTokenGenerate } from "../../Services/api";
 import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -10,14 +11,46 @@ const SignIn: React.FC = () => {
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
 
+  // const handleSubmit = async (event: React.FormEvent) => {
+  //   event.preventDefault();
+  //   setError("");
+  //   try {
+  //     const response = await userTokenGenerate({ username: email, password });
+  //     const token = response.data.accessToken;
+  //     toast.success("Signed in successfully!");
+  //     navigate("/home", { state: { email, token } });
+  //   } catch (error) {
+  //     setError("Incorrect username or password");
+  //     toast.error("Failed to sign in. Please check your credentials.");
+  //   }
+  // };
+
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError("");
     try {
       const response = await userTokenGenerate({ username: email, password });
       const token = response.data.accessToken;
-      toast.success("Signed in successfully!");
-      navigate("/home", { state: { email, token } });
+  
+      // Decode the token to check roles
+      const decodedToken: any = jwtDecode(token);
+      const roles: string[] = decodedToken?.realm_access?.roles || [];
+  
+      // Read environment variable
+      const isSelfServicePortalEnabled =
+        process.env.REACT_APP_SELF_SERVICE_PORTAL_ENABLED === "true";
+      if (roles.includes("admin")) {
+        toast.success("Admin login successful!");
+        navigate("/dashboard", { state: { email, token } });
+      } else {
+        if (isSelfServicePortalEnabled) {
+          toast.success("Signed in successfully!");
+          navigate("/home", { state: { email, token } });
+        } else {
+          toast.success("Signed in successfully! But self-service portal is disabled.");
+        }
+      }
     } catch (error) {
       setError("Incorrect username or password");
       toast.error("Failed to sign in. Please check your credentials.");

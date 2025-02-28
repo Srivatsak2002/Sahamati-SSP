@@ -7,6 +7,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Home from './Pages/Home/home';
 import ForgotPassword from './Pages/Forgotpassword/forgotPassword';
+import SecretExpiry from './Pages/TokensDashboard/tokenTableDashboard';
+import IAMDashboard from './Pages/IAMPage/IAMDashboard';
 
 const App: React.FC = () => {
   return (
@@ -25,8 +27,9 @@ const App: React.FC = () => {
       />
       <Routes>
         <Route path='/' element={<Navigate to="/signin" />} />
-        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signin" element={<IAMDashboard />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<SecretExpiry />} />
         <Route path='/home' element={<Home />} />
         <Route path='/forgotpassword' element={<ForgotPassword />} />
         <Route path="*" element={<NotFound />} />

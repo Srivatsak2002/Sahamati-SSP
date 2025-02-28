@@ -18,7 +18,6 @@ const ForgotPassword: React.FC = () => {
 
     try {
       const response =await resetPassword(email);
-      console.log("reponsens",response)
       toast.success(
         "Password reset instructions have been sent to your email."
       );
