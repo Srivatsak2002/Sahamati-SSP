@@ -2,13 +2,15 @@ import * as React from "react";
 import { Box, Button, TextField, InputAdornment, Link } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import TabsComponent from "../../Components/TabsComponent/tabsComponent";
-import { fetchTokenData } from "../../Services/api";
+
 import "./tokenTableDashboard.css";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs, { Dayjs } from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import CustomTable from "../../Components/Table/table";
+import CircularIndeterminate from "../../Components/CircularProgress/circularProgress";
+import { useApi } from "../../Services/api";
 
 const mainColumns = [
   { id: "sno", label: "S.NO", minWidth: 50, align: "center" as const },
@@ -60,7 +62,9 @@ export default function TokenTableContainer() {
   const [filters, setFilters] = React.useState<{ [key: string]: string }>({});
   const [selectedTab, setSelectedTab] = React.useState<string>("Token Details");
   const [tableData, setTableData] = React.useState<any[]>([]);
-
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const { fetchTokenData } = useApi();
+  
   React.useEffect(() => {
     loadData();
   }, []);
@@ -80,17 +84,22 @@ export default function TokenTableContainer() {
     }
   }, [rawData, filters]);
 
-  // Prepare table data when filtered data changes
   React.useEffect(() => {
     prepareTableData();
   }, [filteredData, selectedEntity]);
 
   const loadData = async () => {
-    const apiData = await fetchTokenData();
-    setRawData(apiData);
+    setIsLoading(true);
+    try {
+      const apiData = await fetchTokenData();
+      setRawData(apiData);
+    } catch (error) {
+      console.error("Failed to fetch token data:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // Function to filter raw data by specific date
   const filterRawDataByDate = (data: any[], dateStr: string) => {
     const searchDate = new Date(dateStr);
     if (isNaN(searchDate.getTime())) {
@@ -152,7 +161,6 @@ export default function TokenTableContainer() {
   const applyFilters = (dataToFilter = data) => {
     let filtered = [...dataToFilter];
 
-    // Apply entity name filter
     if (filters.entityName) {
       const searchTerm = filters.entityName.toLowerCase();
       filtered = filtered.filter(
@@ -162,7 +170,6 @@ export default function TokenTableContainer() {
       );
     }
 
-    // Apply entity ID filter
     if (filters.entityId) {
       const searchTerm = filters.entityId.toLowerCase();
       filtered = filtered.filter(
@@ -172,7 +179,6 @@ export default function TokenTableContainer() {
       );
     }
 
-    // Update filtered data with sequential S.NO
     filtered = filtered.map((item, index) => ({
       ...item,
       sno: index + 1,
@@ -182,62 +188,54 @@ export default function TokenTableContainer() {
   };
   const prepareTableData = () => {
     if (selectedEntity) {
-      // Find the entity in filtered data
       const selectedEntityData = filteredData.find(
         (e) => e.entity_id === selectedEntity
       );
-  
+
       if (!selectedEntityData) {
         setTableData([]);
         return;
       }
-  
-      // Group details by date and sum tokens
-      const dateMap: Record<string, { tokens: number, timestamp: number }> = {};
-      
+
+      const dateMap: Record<string, { tokens: number; timestamp: number }> = {};
+
       selectedEntityData.details.forEach((detail: any) => {
-        // Create a date object
         const dateObj = new Date(detail.date);
-        
-        // Format date as YYYY-MM-DD for grouping
+
         const year = dateObj.getFullYear();
-        const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-        const day = dateObj.getDate().toString().padStart(2, '0');
+        const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
+        const day = dateObj.getDate().toString().padStart(2, "0");
         const dateKey = `${year}-${month}-${day}`;
-        
+
         if (!dateMap[dateKey]) {
           dateMap[dateKey] = {
             tokens: 0,
-            timestamp: new Date(`${year}-${month}-${day}`).getTime()
+            timestamp: new Date(`${year}-${month}-${day}`).getTime(),
           };
         }
-        
+
         dateMap[dateKey].tokens += detail.tokens_issued;
       });
-  
-      // Convert the grouped data to array format
+
       const entityData = Object.entries(dateMap).map(([dateKey, data]) => {
-        // Create a date object for display formatting
         const dateObj = new Date(dateKey);
         const displayDate = dateObj.toLocaleDateString();
-        
+
         return {
           date: displayDate,
           tokens_issued: data.tokens,
-          timestamp: data.timestamp // Store timestamp for sorting
+          timestamp: data.timestamp,
         };
       });
-  
-      // Sort by date (most recent first)
+
       entityData.sort((a, b) => b.timestamp - a.timestamp);
-  
-      // Assign S.NO after sorting
+
       const finalEntityData = entityData.map((item, index) => ({
         sno: index + 1,
         date: item.date,
-        tokens_issued: item.tokens_issued
+        tokens_issued: item.tokens_issued,
       }));
-  
+
       setTableData(finalEntityData);
     } else {
       const mainData = filteredData.map((row) => ({
@@ -252,7 +250,7 @@ export default function TokenTableContainer() {
           </Link>
         ),
       }));
-  
+
       setTableData(mainData);
     }
   };
@@ -277,7 +275,6 @@ export default function TokenTableContainer() {
   return (
     <TabsComponent
       tabs={["Token Details"]}
-      title="Entity Token Usage"
       onTabChange={setSelectedTab}
     >
       {selectedTab === "Token Details" ? (
@@ -334,8 +331,6 @@ export default function TokenTableContainer() {
                 }}
               />
 
-              
-
               <Button
                 variant="outlined"
                 className="reset-button"
@@ -375,9 +370,13 @@ export default function TokenTableContainer() {
               />
               {tableData.length === 0 && (
                 <Box className="no-data" sx={{ textAlign: "center", py: 4 }}>
-                  No matching data found
+                  No records found, Kindly check the filter values applied
                 </Box>
               )}
+            </Box>
+          ) : isLoading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+              <CircularIndeterminate />
             </Box>
           ) : (
             <>
@@ -388,7 +387,7 @@ export default function TokenTableContainer() {
               />
               {tableData.length === 0 && (
                 <Box className="no-data" sx={{ textAlign: "center", py: 4 }}>
-                  No matching data found
+                  No records found, Kindly check the filter values applied
                 </Box>
               )}
             </>

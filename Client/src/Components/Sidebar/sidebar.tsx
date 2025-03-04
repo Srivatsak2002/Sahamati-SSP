@@ -4,8 +4,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import GroupIcon from "@mui/icons-material/Group";
 import AppsIcon from "@mui/icons-material/Apps";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
-import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
+import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
+import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import { useLocation } from "react-router-dom";
 import "./sidebar.css";
 
@@ -15,19 +15,23 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ onToggle }) => {
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(true); 
+  const [isOpen, setIsOpen] = useState(true);
   const dashboardLink = process.env.REACT_APP_DASHBOARD_URL;
 
   const toggleSidebar = () => {
-    setIsOpen(!isOpen); 
-    onToggle(!isOpen); 
+    setIsOpen(!isOpen);
+    onToggle(!isOpen);
   };
 
   return (
     <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
       <div className={`sidebar-header ${isOpen ? "open" : "closed"}`}>
         <button onClick={toggleSidebar} className="toggle-button">
-          {isOpen ? <KeyboardDoubleArrowLeftIcon /> : <KeyboardDoubleArrowRightIcon />} 
+          {isOpen ? (
+            <KeyboardDoubleArrowLeftIcon />
+          ) : (
+            <KeyboardDoubleArrowRightIcon />
+          )}
         </button>
       </div>
       <nav className="sidebar-menu">

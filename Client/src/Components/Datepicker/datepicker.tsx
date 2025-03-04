@@ -5,13 +5,14 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-// Enhanced DateRangePicker component
-export const EnhancedDateRangePicker = ({ 
-  dateRange, 
-  setDateRange 
+export const DateRangePicker = ({
+  dateRange,
+  setDateRange,
 }: {
   dateRange: [Date | null, Date | null];
-  setDateRange: React.Dispatch<React.SetStateAction<[Date | null, Date | null]>>;
+  setDateRange: React.Dispatch<
+    React.SetStateAction<[Date | null, Date | null]>
+  >;
 }) => {
   const [startDate, endDate] = dateRange;
   const [open, setOpen] = React.useState(false);
@@ -44,7 +45,7 @@ export const EnhancedDateRangePicker = ({
             readOnly: true,
             endAdornment: (
               <InputAdornment position="end">
-                <CalendarTodayIcon 
+                <CalendarTodayIcon
                   style={{ cursor: "pointer" }}
                   onClick={() => setOpen(true)}
                 />
@@ -59,31 +60,31 @@ export const EnhancedDateRangePicker = ({
         anchorEl={anchorRef.current}
         onClose={() => setOpen(false)}
         anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
+          vertical: "bottom",
+          horizontal: "left",
         }}
         transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
+          vertical: "top",
+          horizontal: "left",
         }}
         PaperProps={{
           elevation: 3,
-          sx: { 
-            mt: 1, 
-            overflow: 'visible',
-            '&:before': {
+          sx: {
+            mt: 1,
+            overflow: "visible",
+            "&:before": {
               content: '""',
-              display: 'block',
-              position: 'absolute',
+              display: "block",
+              position: "absolute",
               top: 0,
               left: 20,
               width: 10,
               height: 10,
-              bgcolor: 'background.paper',
-              transform: 'translateY(-50%) rotate(45deg)',
+              bgcolor: "background.paper",
+              transform: "translateY(-50%) rotate(45deg)",
               zIndex: 0,
             },
-          }
+          },
         }}
       >
         <Box sx={{ p: 1 }}>

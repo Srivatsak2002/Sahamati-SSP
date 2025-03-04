@@ -18,8 +18,8 @@ import { SvgIconComponent } from "@mui/icons-material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { readEntitySecret, resetEntitySecret } from "../../Services/api";
 import { toast } from "react-toastify";
+import { useApi } from "../../Services/api";
 
 interface InfoCardProps {
   icon: React.ReactElement<SvgIconComponent>;
@@ -36,7 +36,8 @@ const EntityInfoCard: React.FC<InfoCardProps> = ({
 }) => {
   const [secret, setSecret] = useState<string | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
-
+    const { readEntitySecret,resetEntitySecret } = useApi();
+  
   const handleReadSecret = async () => {
     try {
       if (!secret) {

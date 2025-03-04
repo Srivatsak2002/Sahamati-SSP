@@ -27,14 +27,9 @@ interface TableProps {
   filters: { [key: string]: string };
 }
 
-export default function CustomTable({
-  columns,
-  data,
-  filters,
-}: TableProps) {
+export default function CustomTable({ columns, data, filters }: TableProps) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -56,10 +51,18 @@ export default function CustomTable({
   });
 
   const handleDownloadCSV = () => {
+    let fileName = "table_data.csv";
+
+    if (columns.some((col) => col.id === "tokens_issued")) {
+      fileName = "tokens_details.csv";
+    } else if (columns.some((col) => col.id === "expiryDate")) {
+      fileName = "secret_expiry_details.csv";
+    }
+    console.log("filename", fileName);
     const csvHeaders = columns.map((col) => col.label).join(",") + "\n";
 
     const csvRows = filteredRows
-      .map((row, rowIndex) => {
+      .map((row) => {
         return columns
           .map((col) => {
             let cellValue = row[col.id] || "";
@@ -85,7 +88,7 @@ export default function CustomTable({
 
     const link = document.createElement("a");
     link.href = encodedUri;
-    link.download = "table_data.csv";
+    link.download = fileName;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -141,12 +144,10 @@ export default function CustomTable({
         alignItems="center"
         p={2}
       >
-        {/* ✅ Download CSV Button */}
         <Button variant="contained" color="primary" onClick={handleDownloadCSV}>
           Download CSV
         </Button>
 
-        {/* ✅ Table Pagination */}
         <TablePagination
           className="custom-table-pagination"
           rowsPerPageOptions={[5, 10, 25]}

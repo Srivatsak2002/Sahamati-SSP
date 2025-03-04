@@ -10,7 +10,7 @@ export const generateToken = async () => {
     formData.append('client_id', appConfig.SAHAMATI_CLIENT_ID);
     formData.append('client_secret', appConfig.SAHAMATI_CLIENT_SECRET);
 
-    const response = await axios.post(appConfig.TOKEN_URL, formData.toString(), {
+    const response = await axios.post(appConfig.KEYCLOAK_URL, formData.toString(), {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },

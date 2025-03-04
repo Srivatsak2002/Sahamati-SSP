@@ -2,12 +2,15 @@ import * as React from "react";
 import { Box, Button, TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import TabsComponent from "../../Components/TabsComponent/tabsComponent";
-import { fetchSecretExpiryData } from "../../Services/api";
+import { useApi } from "../../Services/api";
 import CustomTable from "../../Components/Table/table";
 import "./secretExpiryDashboard.css";
 import "react-datepicker/dist/react-datepicker.css";
-import { EnhancedDateRangePicker } from "../../Components/Datepicker/datepicker";
+import { DateRangePicker } from "../../Components/Datepicker/datepicker";
+import CircularIndeterminate from "../../Components/CircularProgress/circularProgress";
+import { useConfig } from "../../Context/configContext";
 
+  
 
 const columns = [
   { id: "sno", label: "S.NO", minWidth: 50, align: "center" as const },
@@ -37,6 +40,11 @@ export default function SecretExpiryTableContainer() {
   ]);
   const [startDate, endDate] = dateRange;
   const [filters, setFilters] = React.useState<{ [key: string]: string }>({});
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const { fetchSecretExpiryData } = useApi();
+  const config = useConfig();
+  const DISPLAY_ENTITIES_WITHOUT_EXPIRYDATE = config.REACT_APP_DISPLAY_ENTITIES_WITHOUT_EXPIRYDATE || false;
+
 
   React.useEffect(() => {
     loadData();
@@ -47,46 +55,56 @@ export default function SecretExpiryTableContainer() {
   }, [rawData, filters, dateRange]);
 
   const loadData = async () => {
-    const apiData = await fetchSecretExpiryData();
-    setRawData(apiData);
+    setIsLoading(true);
+    try {
+      const apiData = await fetchSecretExpiryData();
+      setRawData(apiData);
+    } catch (error) {
+      console.error("Failed to fetch secret expiry data:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const calculateDaysLeft = (expiryDate: string) => {
-    const parts = expiryDate.split(/[-\/]/);
-
-    if (parts.length !== 3) {
+  const calculateDaysLeft = (expiryDateString: string | null) => {
+    if (!expiryDateString) {
       return NaN;
     }
 
-    const day = parseInt(parts[0], 10);
-    const month = parseInt(parts[1], 10) - 1;
-    const year = parseInt(parts[2], 10);
+    const expiryDate = new Date(expiryDateString);
+    if (isNaN(expiryDate.getTime())) {
+      return NaN;
+    }
 
-    const expiry = new Date(year, month, day);
     const today = new Date();
 
-    expiry.setHours(0, 0, 0, 0);
+    expiryDate.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
 
     const difference = Math.ceil(
-      (expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+      (expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
     );
     return difference;
   };
 
-  const parseExpiryDate = (expiryDate: string): Date => {
-    const parts = expiryDate.split(/[-\/]/);
-    if (parts.length !== 3) {
-      return new Date(NaN);
+  const formatExpiryDate = (expiryDateString: string | null) => {
+    if (!expiryDateString) return "Not Available";
+
+    const expiryDate = new Date(expiryDateString);
+    if (isNaN(expiryDate.getTime())) {
+      return "Invalid Date";
     }
-    const day = parseInt(parts[0], 10);
-    const month = parseInt(parts[1], 10) - 1;
-    const year = parseInt(parts[2], 10);
-    return new Date(year, month, day);
+    return expiryDate.toISOString().split("T")[0];
   };
 
   const applyFilters = () => {
     let filtered = [...rawData];
+
+    if (!DISPLAY_ENTITIES_WITHOUT_EXPIRYDATE) {
+      filtered = filtered.filter(
+        (item) => item.hasOwnProperty("expiryDate") && item.expiryDate !== null
+      );
+    }
 
     if (filters.id) {
       filtered = filtered.filter((item) =>
@@ -106,13 +124,16 @@ export default function SecretExpiryTableContainer() {
       );
     }
 
-    // Filter by date range if both start and end dates are set
     if (startDate && endDate) {
       const endDateWithFullDay = new Date(endDate);
       endDateWithFullDay.setHours(23, 59, 59, 999);
 
       filtered = filtered.filter((item) => {
-        const expiryDate = parseExpiryDate(item.expiryDate);
+        if (!item.hasOwnProperty("expiryDate") || item.expiryDate === null) {
+          return DISPLAY_ENTITIES_WITHOUT_EXPIRYDATE;
+        }
+
+        const expiryDate = new Date(item.expiryDate);
         return expiryDate >= startDate && expiryDate <= endDateWithFullDay;
       });
     }
@@ -121,7 +142,13 @@ export default function SecretExpiryTableContainer() {
       filtered.map((item, index) => ({
         ...item,
         sno: index + 1,
-        expiresIn: calculateDaysLeft(item.expiryDate),
+        expiresIn:
+          item.hasOwnProperty("expiryDate") && item.expiryDate !== null
+            ? calculateDaysLeft(item.expiryDate)
+            : "N/A",
+        expiryDate: item.hasOwnProperty("expiryDate")
+          ? formatExpiryDate(item.expiryDate)
+          : "Not Available",
       }))
     );
   };
@@ -135,37 +162,15 @@ export default function SecretExpiryTableContainer() {
     setDateRange([null, null]);
   };
 
-  // Custom input component to make react-datepicker look like MUI
-  const CustomInput = React.forwardRef(({ value, onClick }: any, ref: any) => (
-    <TextField
-      inputRef={ref}
-      variant="outlined"
-      placeholder="Search by date range"
-      className="secret-search-bar"
-      value={value}
-      onClick={onClick}
-      InputProps={{
-        readOnly: true,
-        endAdornment: (
-          <InputAdornment position="end">
-            <SearchIcon />
-          </InputAdornment>
-        ),
-      }}
-      sx={{ width: "300px" }}
-    />
-  ));
-
   return (
     <TabsComponent
       tabs={["Expiry Details"]}
-      title="Expiry Data"
       onTabChange={() => {}}
     >
       <Box className="secret-details-container">
         <Box className="secret-search-filters-container">
           <Box className="secret-filters">
-            <EnhancedDateRangePicker
+            <DateRangePicker
               dateRange={dateRange}
               setDateRange={setDateRange}
             />
@@ -221,11 +226,23 @@ export default function SecretExpiryTableContainer() {
             </Button>
           </Box>
         </Box>
-        <CustomTable columns={columns} data={filteredData} filters={{}} />
-        {filteredData.length === 0 && (
-          <Box className="secret-no-data" sx={{ textAlign: "center", py: 4 }}>
-            No matching data found
+
+        {isLoading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+            <CircularIndeterminate />
           </Box>
+        ) : (
+          <>
+            <CustomTable columns={columns} data={filteredData} filters={{}} />
+            {filteredData.length === 0 && (
+              <Box
+                className="secret-no-data"
+                sx={{ textAlign: "center", py: 4 }}
+              >
+                No records found, Kindly check the filter values applied
+              </Box>
+            )}
+          </>
         )}
       </Box>
     </TabsComponent>

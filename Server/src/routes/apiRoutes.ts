@@ -7,7 +7,8 @@ import { appConfig } from "../config/app-config";
 const router = Router();
 const API_BASE_URL = appConfig.REACT_APP_TOKEN_SERVICE_URL;
 const TOKEN_DATA_QUERY_URL = appConfig.REACT_APP_TOKEN_DATA_QUERY_URL;
-const SECRET_EXPIRY_DATA_QUERY_URL = appConfig.REACT_APP_SECRET_EXPIRY_DATA_QUERY_URL;
+const SECRET_EXPIRY_DATA_QUERY_URL =
+  appConfig.REACT_APP_SECRET_EXPIRY_DATA_QUERY_URL;
 if (!API_BASE_URL) {
   logger.error("API_BASE_URL is not defined. Please check your .env file.");
   process.exit(1);
@@ -126,11 +127,15 @@ router.post("/token/data/query", async (req: Request, res: Response) => {
                 ORDER BY "tokens_issued" DESC`,
     };
 
-    const response = await axios.post(`${TOKEN_DATA_QUERY_URL}`, requestBody, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axios.post(
+      `${TOKEN_DATA_QUERY_URL}/v2/data/query/iam-api-telemetry`,
+      requestBody,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     res.json(response.data?.result || []);
   } catch (error) {
     logger.error("Error fetching data:", error);
@@ -140,34 +145,34 @@ router.post("/token/data/query", async (req: Request, res: Response) => {
 
 router.post("/secret/expiry/query", async (req: Request, res: Response) => {
   try {
-    const requestBody = {
-      id: "api.data.out",
-      ver: "v2",
-      ts: "1711966306164",
-      params: { msgid: "e180ecac-8f41-4f21-9a21-0b3a1a368917" },
-      context: { aggregationLevel: "hour" },
-      query: `SELECT TIME_FLOOR(CAST("__time" AS TIMESTAMP), 'P1D') AS "__time", 
-                    COALESCE(LOOKUP("edata.attributes.entity_id", 'entity_name'), '') AS "entity_name", 
-                    "edata.attributes.entity_id" AS "entity_id", 
-                    COUNT(*) AS "secrets_reset" 
-                    FROM "iam-api-telemetry" 
-                    WHERE "edata.attributes.request.url" IN ('/entity/secret/reset') 
-                    AND "edata.status" = 'Ok' 
-                    GROUP BY TIME_FLOOR(CAST("__time" AS TIMESTAMP), 'P1D'), 
-                    COALESCE(LOOKUP("edata.attributes.entity_id", 'entity_name'), ''), 
-                    "edata.attributes.entity_id" 
-                    ORDER BY "secrets_reset" DESC`,
+    
+    const headers = {
+      "Content-Type": "application/json",
+      //   Authorization: `Bearer ${token}`,
     };
 
-    const response = await axios.post(`${SECRET_EXPIRY_DATA_QUERY_URL}`, requestBody, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    res.json(response.data?.entities || []);
+    const requestBody = {
+      txnId: "test-txn-id",
+      limit: 5,
+      offset: 0,
+      filters: {},
+    };
+
+    const response = await axios.post(
+      `${SECRET_EXPIRY_DATA_QUERY_URL}/private/entity/list`,
+      requestBody,
+      { headers }
+    );
+
+    res.json(response.data.entities || []);
   } catch (error) {
-    logger.error("Error fetching data:", error);
-    res.status(500).json({ message: "Failed to fetch data." });
+    logger.error("Error fetching secret expiry data:", error);
+    res.status(500).json({ message: "Failed to fetch secret expiry data." });
   }
 });
+
+router.get("/config", (_req, res) => {
+  res.json(appConfig.CLIENT_CONFIG);
+});
+
 export default router;

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./forgotPassword.css";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { resetPassword } from "../../Services/api";
+import { useApi } from "../../Services/api";
 import CircularIndeterminate from "../../Components/CircularProgress/circularProgress";
 
 const ForgotPassword: React.FC = () => {
@@ -10,7 +10,7 @@ const ForgotPassword: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-
+  const { resetPassword } = useApi();
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError("");
