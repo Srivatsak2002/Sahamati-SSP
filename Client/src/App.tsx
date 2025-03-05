@@ -4,14 +4,16 @@ import SignIn from './Pages/SignIn/signIn';
 import Register from './Pages/Register/register';
 import NotFound from './Pages/Notfound/notFound';
 import { ToastContainer } from 'react-toastify';
+import { ThemeProvider } from '@mui/material/styles';
 import 'react-toastify/dist/ReactToastify.css';
 import Home from './Pages/Home/home';
 import ForgotPassword from './Pages/Forgotpassword/forgotPassword';
-import IAMDashboard from './Pages/IAMPage/IAMDashboard';
 import AdminPortalHome from './Pages/AdminPortalHome/adminPortalHome';
+import theme from './Themes/theme';
 
 const App: React.FC = () => {
   return (
+    <ThemeProvider theme={theme}>
     <Router>
       <ToastContainer 
         position="top-right"
@@ -29,12 +31,13 @@ const App: React.FC = () => {
         <Route path='/' element={<Navigate to="/signin" />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<AdminPortalHome />} />
+        <Route path="/admin-portal" element={<AdminPortalHome />} />
         <Route path='/home' element={<Home />} />
         <Route path='/forgotpassword' element={<ForgotPassword />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
+    </ThemeProvider>
   );
 };
 

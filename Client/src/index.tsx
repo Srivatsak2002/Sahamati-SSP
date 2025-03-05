@@ -13,7 +13,6 @@ const fetchConfig = async () => {
   try {
     const response = await fetch("http://localhost:3001/api/config");
     const config = await response.json();
-    console.log("Fetched config:", config);
     return config;
   } catch (error) {
     console.error("Failed to fetch config:", error);

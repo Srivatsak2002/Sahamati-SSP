@@ -8,6 +8,8 @@ import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArro
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import { useLocation } from "react-router-dom";
 import "./sidebar.css";
+import { useConfig } from "../../Context/configContext";
+
 
 interface SidebarProps {
   onToggle: (isOpen: boolean) => void;
@@ -16,7 +18,8 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ onToggle }) => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(true);
-  const dashboardLink = process.env.REACT_APP_DASHBOARD_URL;
+  const config = useConfig();
+  const dashboardLink = config.REACT_APP_DASHBOARD_URL;
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);

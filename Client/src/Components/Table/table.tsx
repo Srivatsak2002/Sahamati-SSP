@@ -58,7 +58,6 @@ export default function CustomTable({ columns, data, filters }: TableProps) {
     } else if (columns.some((col) => col.id === "expiryDate")) {
       fileName = "secret_expiry_details.csv";
     }
-    console.log("filename", fileName);
     const csvHeaders = columns.map((col) => col.label).join(",") + "\n";
 
     const csvRows = filteredRows

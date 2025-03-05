@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { useApi } from "../../Services/api"; // Import the custom hook
+import { useConfig } from "../../Context/configContext";
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -12,6 +13,7 @@ const SignIn: React.FC = () => {
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
   const { userTokenGenerate } = useApi();
+  const config = useConfig();
   // const handleSubmit = async (event: React.FormEvent) => {
   //   event.preventDefault();
   //   setError("");
@@ -34,9 +36,8 @@ const SignIn: React.FC = () => {
       const token = response.data.accessToken;
       const decodedToken: any = jwtDecode(token);
       const roles: string[] = decodedToken?.realm_access?.roles || [];
-
-      const isSelfServicePortalEnabled =
-        process.env.REACT_APP_SELF_SERVICE_PORTAL_ENABLED === "true";
+      
+      const isSelfServicePortalEnabled = config.REACT_APP_SELF_SERVICE_PORTAL_ENABLED === true;
       if (roles.includes("admin")) {
         toast.success("Admin login successful!");
         navigate("/admin-portal", { state: { email, token } });
